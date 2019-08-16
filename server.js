@@ -10,7 +10,6 @@ const chatkit = new Chatkit.default({
   instanceLocator: process.env.INSTANCE,
   key:
     process.env.SECRET_KEY
-    // 'c409ea43-2b0d-4889-9c2c-bef152550964:hvAyXG3a8RDyJDD4zr8Vuo8md48yMyHCNbpN4f5ZwWw='
 })
 
 app.use(bodyParser.urlencoded({ extended: false }))
