@@ -2,7 +2,7 @@ const util = require("util");
 const readline = require("readline");
 const { JSDOM } = require("jsdom");
 const { ChatManager, TokenProvider } = require("@pusher/chatkit-client");
-require('dotenv').config();
+require("dotenv").config();
 const axios = require("axios");
 const prompt = require("prompt");
 const ora = require("ora");
@@ -59,7 +59,7 @@ const main = async () => {
       tokenProvider: new TokenProvider({
         url: "http://localhost:3001/authenticate"
       })
-    })
+    });
 
     spinner.start("Connecting to Pusher..");
     const currentUser = await chatManager.connect();
@@ -108,16 +108,15 @@ const main = async () => {
       roomId: room.id,
       hooks: {
         onMessage: message => {
-          const { sender, parts } = message
+          const { sender, parts } = message;
           if (sender.id === username) {
-            return
+            return;
           }
-          console.log(`${sender.id}: ${parts[0].payload.content}`)
+          console.log(`${sender.id}: ${parts[0].payload.content}`);
         }
       },
-      messageLimit:0
-      
-    })
+      messageLimit: 0
+    });
     spinner.succeed(`Joined ${room.name}`);
     console.log(
       "You may now send and receive messages. Type your message and hit <Enter> to send."
@@ -126,7 +125,19 @@ const main = async () => {
     const input = readline.createInterface({ input: process.stdin });
 
     input.on("line", async text => {
-      await currentUser.sendSimpleMessage({ roomId: room.id, text });
+      if (text === "leave") {
+        currentUser.sendSimpleMessage({ roomId: room.id, text:'/**** LEFT THE CHAT ROOM ****/' });
+        currentUser.leaveRoom({ roomId: room.id })
+          .then(() => {
+            process.exit(1);
+          })
+          .catch(err => {
+            console.log(`Error leaving room ${someRoomID}: ${err}`);
+          });
+      }
+      else{
+        await currentUser.sendSimpleMessage({ roomId: room.id, text });
+      }
     });
   } catch (err) {
     spinner.fail();
